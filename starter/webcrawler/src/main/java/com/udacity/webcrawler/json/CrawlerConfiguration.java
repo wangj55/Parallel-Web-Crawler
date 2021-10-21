@@ -55,6 +55,7 @@ public final class CrawlerConfiguration {
      * An unmodifiable {@link List} of URLs that define the starting points of the web crawl. It
      * should not contain any duplicate URLs.
      */
+    @JsonProperty("startPages")
     public List<String> getStartPages() {
         return startPages;
     }
@@ -63,6 +64,7 @@ public final class CrawlerConfiguration {
      * A {@link List} of regular expression {@link Pattern}s that determine which URLs, if any, the
      * web crawler should not follow.
      */
+    @JsonProperty("ignoredUrls")
     public List<Pattern> getIgnoredUrls() {
         return ignoredUrls;
     }
@@ -71,6 +73,7 @@ public final class CrawlerConfiguration {
      * A {@link List} of regular expression {@link Pattern}s that determine which words, if any, the
      * web crawler should not be counted toward the popular word count returned from the crawl.
      */
+    @JsonProperty("ignoredWords")
     public List<Pattern> getIgnoredWords() {
         return ignoredWords;
     }
@@ -83,6 +86,7 @@ public final class CrawlerConfiguration {
      * {@link #getImplementationOverride()} explicitly specifies otherwise). If set to a value less
      * than 1, the crawler will default to using the number of available CPU cores on the system.
      */
+    @JsonProperty("parallelism")
     public int getParallelism() {
         return parallelism;
     }
@@ -97,6 +101,7 @@ public final class CrawlerConfiguration {
      * <p>If unset or empty, the value of {@link #getParallelism()} setting is used to determine which
      * crawler implementation to use.
      */
+    @JsonProperty("implementationOverride")
     public String getImplementationOverride() {
         return implementationOverride;
     }
@@ -124,6 +129,7 @@ public final class CrawlerConfiguration {
      * <p>In this example, the crawler will visit at most A, B, C, and D. The crawler may visit
      * <i>fewer</i> pages if it runs out of time before it can finish. See {@link #getTimeout()}.
      */
+    @JsonProperty("maxDepth")
     public int getMaxDepth() {
         return maxDepth;
     }
@@ -136,6 +142,7 @@ public final class CrawlerConfiguration {
      * finish processing any HTML it has already downloaded, but it will not download any more pages
      * or follow any more links.
      */
+    @JsonProperty("timeout")
     public Duration getTimeout() {
         return timeout;
     }
@@ -145,6 +152,7 @@ public final class CrawlerConfiguration {
      *
      * <p>See {@link com.udacity.webcrawler.json.CrawlResult#getWordCounts()} for more information.
      */
+    @JsonProperty("popularWordCount")
     public int getPopularWordCount() {
         return popularWordCount;
     }
@@ -157,6 +165,7 @@ public final class CrawlerConfiguration {
      *
      * <p>If the path is empty, the data will be written to standard output.
      */
+    @JsonProperty("profileOutputPath")
     public String getProfileOutputPath() {
         return profileOutputPath;
     }
@@ -170,9 +179,8 @@ public final class CrawlerConfiguration {
      *
      * <p>See {@link com.udacity.webcrawler.json.CrawlResult}.
      */
-    public String getResultPath() {
-        return resultPath;
-    }
+    @JsonProperty("resultPath")
+    public String getResultPath() { return resultPath; }
 
     /**
      * A builder class to create {@link CrawlerConfiguration} instances.
