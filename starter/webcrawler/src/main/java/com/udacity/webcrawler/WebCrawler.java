@@ -10,19 +10,19 @@ import java.util.List;
  */
 public interface WebCrawler {
 
-  /**
-   * Starts a crawl at the given URLs.
-   *
-   * @param startingUrls the starting points of the crawl.
-   * @return the {@link CrawlResult} of the crawl.
-   */
-  @Profiled
-  CrawlResult crawl(List<String> startingUrls);
+    /**
+     * Starts a crawl at the given URLs.
+     *
+     * @param startingUrls the starting points of the crawl.
+     * @return the {@link CrawlResult} of the crawl.
+     */
+    @Profiled
+    CrawlResult crawl(List<String> startingUrls);
 
-  /**
-   * Returns the maximum amount of parallelism (number of CPU cores) supported by this web crawler.
-   */
-  default int getMaxParallelism() {
-    return 1;
-  }
+    /**
+     * Returns the maximum amount of parallelism (number of CPU cores) supported by this web crawler.
+     */
+    default int getMaxParallelism() {
+        return 1;
+    }
 }
