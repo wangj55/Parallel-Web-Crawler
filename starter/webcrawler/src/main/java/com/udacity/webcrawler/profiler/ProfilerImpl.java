@@ -3,6 +3,9 @@ package com.udacity.webcrawler.profiler;
 import javax.inject.Inject;
 import java.io.IOException;
 import java.io.Writer;
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
@@ -27,15 +30,39 @@ final class ProfilerImpl implements Profiler {
         this.startTime = ZonedDateTime.now(clock);
     }
 
+    private boolean isClassProfiled(Class<?> klass) {
+        Method[] methods = klass.getDeclaredMethods();
+        if (methods.length == 0) {
+            return false;
+        }
+        for (Method method : methods) {
+            if (method.getAnnotation(Profiled.class) != null) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     @Override
+    @SuppressWarnings("unchecked")
     public <T> T wrap(Class<T> klass, T delegate) {
         Objects.requireNonNull(klass);
 
-        // TODO: Use a dynamic proxy (java.lang.reflect.Proxy) to "wrap" the delegate in a
+        //       Use a dynamic proxy (java.lang.reflect.Proxy) to "wrap" the delegate in a
         //       ProfilingMethodInterceptor and return a dynamic proxy from this method.
-        //       See https://docs.oracle.com/javase/10/docs/api/java/lang/reflect/Proxy.html.
+        //       See https://docs.oracle.com/javase/10/docs/api/java/lang/reflect/Proxy.html
 
-        return delegate;
+        if (!isClassProfiled(klass)) {
+            throw new IllegalArgumentException("Does not contain a profiled method");
+        }
+
+        InvocationHandler handler = new ProfilingMethodInterceptor(delegate, clock, state);
+
+        return (T) Proxy.newProxyInstance(
+                klass.getClassLoader(),
+                new Class[] {klass},
+                handler
+        );
     }
 
     @Override
