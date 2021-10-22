@@ -60,7 +60,7 @@ final class ProfilerImpl implements Profiler {
 
         return (T) Proxy.newProxyInstance(
                 klass.getClassLoader(),
-                new Class[] {klass},
+                new Class<?>[] {klass},
                 handler
         );
     }
@@ -73,7 +73,7 @@ final class ProfilerImpl implements Profiler {
         if (Files.exists(path)) {
             writer = Files.newBufferedWriter(path, StandardOpenOption.APPEND);
         } else {
-            writer = Files.newBufferedWriter(path);
+            writer = Files.newBufferedWriter(path, StandardOpenOption.CREATE, StandardOpenOption.WRITE);
         }
         writeData(writer);
     }
