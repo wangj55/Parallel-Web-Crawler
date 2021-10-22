@@ -11,6 +11,26 @@ Q1. Run the web crawler using the configurations located at src/main/config/writ
 
     Why did the parser take more time when run with ParallelWebCrawler?
 
+    Answer:
+    The results of crawlers are as below:
+    ----------------------------------
+    jiwang@MacbookAir webcrawler % java -classpath target/udacity-webcrawler-1.0.jar com.udacity.webcrawler.main.WebCrawlerMain src/main/config/written_question_1a.json
+    Crawler result is blank
+    {"wordCounts":{"learning":180,"program":133,"machine":126,"with":106,"data":95},"urlsVisited":5}Profiler result written to profileData.txt
+    jiwang@MacbookAir webcrawler % java -classpath target/udacity-webcrawler-1.0.jar com.udacity.webcrawler.main.WebCrawlerMain src/main/config/written_question_1b.json
+
+    Crawler result is blank
+    {"wordCounts":{"data":631,"learning":387,"program":379,"udacity":332,"with":317},"urlsVisited":23}Profiler result written to profileData.txt
+    ----------------------------------
+
+    So I think there might be two causes.
+    1. With the same timeout, the parallel crawler visited more URLs than the sequential crawler did.
+       So the parallel crawler's PageParser parsed more pages, resulting in more time consumed.
+       And this result is the sum of the time that all sub-thread consumed.
+
+    2. When the parallel's parsers were parsing pages at the same time, many of them might have to wait for access to the Map storing data,
+       due to synchronization's feature, which led to more time consumed.
+
 
 Q2. Your manager ran your crawler on her old personal computer, using the configurations from Q1, and she notices that
     the sequential crawler actually outperforms the parallel crawler. She would like to know why.
@@ -18,15 +38,31 @@ Q2. Your manager ran your crawler on her old personal computer, using the config
     (a) Suggest one reason why the sequential web crawler was able to read more web pages than the parallel crawler.
         (Hint: Try setting "parallelism" to 1 in the JSON configs to simulate your manager's computer.)
 
+    Answer:
+    Even when its parallelism is set to one, the thread pool considers much more things to
+    maintain its multi-thread feature, while the sequential crawler never worries about this.
+
     (b) Suggest one scenario in which the parallel web crawler will almost certainly perform better than the sequential
         crawler. Why will it perform better?
+
+    Answer:
+    Set the parallelism larger than one and less than the number of cores of your PC's CPU,
+    and leave all other factors the same for both crawlers.
+    They'll cost a similar amount of time, while the parallel crawler crawls much more URLs.
+
 
 
 Q3. Analyze your method profiler through the lens of Aspect Oriented Programming, by answering the following questions:
 
     (a) What cross-cutting concern is being addressed by the com.udacity.webcrawler.profiler.Profiler class?
 
+    Answer:
+    Performance profiling.
+
     (b) What are the join points of the Profiler in the web crawler program?
+
+    Answer:
+    The warp() method, two writeData() methods, and in WebCrawlerMain#run() where a ProfilerModule is created.
 
 
 Q4. Identify three (3) different design patterns used in this project, and explain which interfaces, classes, and/or
@@ -35,4 +71,19 @@ Q4. Identify three (3) different design patterns used in this project, and expla
     For each pattern, name one thing about the pattern that you LIKED, and one thing you DISLIKED. If you did not like
     anything, you can name two things you disliked.
 
+    Answer:
+    1. Singleton Pattern
+    It is implemented in WebCrawlerModule class and the ProfilerModule class.
+    Like: It provides a way to create an object that a system can only have one.
+    Dislike: It makes unit testing hard.
 
+    2. Abstract Factory
+    Used in PageParserFactory, and implemented in PageParserFactoryImpl.
+    Like: It encapsulates the construction of several related objects into a single Java interface.
+    Dislike: If we want this factory to support new products, we'll have to change the Factory class
+    and all its sub-classes, which is complex.
+
+    3. Dependency Injection
+    It is used everywhere in this project.
+    Like: The DI creates objects for us, and we don't need to create them by ourselves, which makes things simpler.
+    Dislike: It increases complexity by increasing the number of classes.
