@@ -30,10 +30,9 @@ public final class ConfigurationLoader {
      */
     public CrawlerConfiguration load() throws Exception {
         // Fill in this method.
-        Reader reader = Files.newBufferedReader(path);
-        CrawlerConfiguration crawlerConfiguration = read(reader);
-        reader.close();
-        return crawlerConfiguration;
+        try (Reader reader = Files.newBufferedReader(path)) {
+            return read(reader);
+        }
     }
 
     /**
