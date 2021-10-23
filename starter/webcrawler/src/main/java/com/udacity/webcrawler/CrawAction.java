@@ -54,7 +54,9 @@ public class CrawAction extends RecursiveAction {
             return;
         }
         synchronized (visitedUrls) {
-            visitedUrls.add(url);
+            if(!visitedUrls.add(url)) {
+                return;
+            }
         }
         PageParser.Result result = parserFactory.get(url).parse();
         for (Map.Entry<String, Integer> e : result.getWordCounts().entrySet()) {
